@@ -46,27 +46,26 @@ public:
     uint16_t mesh_len = 0;
     
     byte block;
-    byte y = 0; // temp, add 3rd dimension
-
     vec3f p;
     
     for(byte x = 0; x < CHUNK_SIZE; x++)
-      for(byte z = 0; z < CHUNK_SIZE; z++)
-      {
-        p = vec3f(x, y, z);
-        block = chunk->get_block(p);
+      for(byte y = 0; y < CHUNK_SIZE; y++)
+        for(byte z = 0; z < CHUNK_SIZE; z++)
+        {
+          p = vec3f(x, y, z);
+          block = chunk->get_block(p);
 
-        if(block == 0) continue;
+          if(block == 0) continue;
 
-        add_mesh_face(chunk, mesh_len, mesh, vec3f(x, y + 1, z), m_top1, m_top2, p);
-        add_mesh_face(chunk, mesh_len, mesh, vec3f(x, y - 1, z), m_bottom1, m_bottom2, p);
+          add_mesh_face(chunk, mesh_len, mesh, vec3f(x, y + 1, z), m_top1, m_top2, p);
+          add_mesh_face(chunk, mesh_len, mesh, vec3f(x, y - 1, z), m_bottom1, m_bottom2, p);
 
-        add_mesh_face(chunk, mesh_len, mesh, vec3f(x + 1, y, z), m_right1, m_right2, p);
-        add_mesh_face(chunk, mesh_len, mesh, vec3f(x - 1, y, z), m_left1, m_left2, p);
+          add_mesh_face(chunk, mesh_len, mesh, vec3f(x + 1, y, z), m_right1, m_right2, p);
+          add_mesh_face(chunk, mesh_len, mesh, vec3f(x - 1, y, z), m_left1, m_left2, p);
 
-        add_mesh_face(chunk, mesh_len, mesh, vec3f(x, y, z + 1), m_back1, m_back2, p);
-        add_mesh_face(chunk, mesh_len, mesh, vec3f(x, y, z - 1), m_front1, m_front2, p);
-      }
+          add_mesh_face(chunk, mesh_len, mesh, vec3f(x, y, z - 1), m_back1, m_back2, p);
+          add_mesh_face(chunk, mesh_len, mesh, vec3f(x, y, z + 1), m_front1, m_front2, p);
+        }
     
     
     MeshEntity m = MeshEntity(mesh, mesh_len, mat4f::identity());

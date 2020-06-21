@@ -10,6 +10,15 @@
 ILI9163C_TFT tft = ILI9163C_TFT(__CS, __RS, __DC);
 
 
+int8_t z_buff[128][128] = { { 0 } };
+
+void clear_z_buff()
+{
+  for(byte x = 0; x < 128; x++)
+    for(byte y = 0; y < 128; y++)
+      z_buff[x][y] = -127;
+}
+
 /*
 uint8_t z_buff[128][128] = { { 0 } };
 
@@ -51,12 +60,10 @@ void process_z_buff()
 Camera camera = Camera(vec3f(0, -2, -4));
 mat4f mat_proj;
 
-//MeshEntity cube = MeshEntity(cube_mesh, mesh_len, mat4f::translation(vec3f(-1.25f, -1.25f, 0)));
-//MeshEntity cube2 = MeshEntity(cube_mesh, mesh_len, mat4f::identity());
-//MeshEntity cube3 = MeshEntity(cube_mesh, mesh_len, mat4f::translation(vec3f(1.25f, 1.25f, 0)));
 
-triangle chunk_mesh[CHUNK_SIZE*CHUNK_SIZE*12];
+triangle chunk_mesh[CHUNK_SIZE*CHUNK_SIZE*CHUNK_SIZE*12];
 MeshEntity chunk1 = MeshEntity(chunk_mesh, 0, mat4f::identity());
+
 
 ChunkBuilder cb;
 
@@ -79,7 +86,7 @@ void load() {
 
   Chunk c;
   c.fill(0);
-  c.data[0][0] = c.data[1][1] = 1;
+  c.data[0][0][0] = c.data[1][0][0] = c.data[1][0][1] = c.data[2][0][2] = c.data[3][0][3] = c.data[0][1][0] = 1;
 
   Serial.println("Building mesh!");
 
@@ -152,7 +159,8 @@ void render_entity(const MeshEntity& entity)
  
     
     //tft.draw_triangle_buff((short)t.p[0].x, (short)t.p[0].y, (short)t.p[1].x, (short)t.p[1].y, (short)t.p[2].x, (short)t.p[2].y, color, z_buff, (color & 0xfe));
-    tft.draw_triangle((short)t.p[0].x, (short)t.p[0].y, (short)t.p[1].x, (short)t.p[1].y, (short)t.p[2].x, (short)t.p[2].y, color);
+    //tft.draw_triangle((short)t.p[0].x, (short)t.p[0].y, (short)t.p[1].x, (short)t.p[1].y, (short)t.p[2].x, (short)t.p[2].y, color);
+    tft.draw_triangle_z((short)t.p[0].x, (short)t.p[0].y, (short)t.p[0].z, (short)t.p[1].x, (short)t.p[1].y,(short)t.p[1].z, (short)t.p[2].x, (short)t.p[2].y, (short)t.p[2].z, color, z_buff);
   }
 }
 
@@ -224,6 +232,7 @@ void loop() {
   if(render)
   {
     tft.fill_screen(BLACK);
+    clear_z_buff();
 
     //render_loop();
     
