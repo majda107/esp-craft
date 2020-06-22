@@ -60,8 +60,7 @@ void process_z_buff()
 Camera camera = Camera(vec3f(0, -2, -4));
 mat4f mat_proj;
 
-
-triangle chunk_mesh[CHUNK_SIZE*CHUNK_SIZE*CHUNK_SIZE*12];
+triangle chunk_mesh[CHUNK_MESH_SIZE]; // yh limited
 MeshEntity chunk1 = MeshEntity(chunk_mesh, 0, mat4f::identity());
 
 
@@ -88,12 +87,10 @@ void load() {
   c.fill(0);
   c.data[0][0][0] = c.data[1][0][0] = c.data[1][0][1] = c.data[2][0][2] = c.data[3][0][3] = c.data[0][1][0] = 1;
 
-  Serial.println("Building mesh!");
-
   chunk1 = cb.build_mesh(&c, &chunk_mesh[0]);
 
-  Serial.println("Mesh built!");
-  Serial.println(chunk1.mesh_len);
+  if(chunk1.mesh_len > CHUNK_MESH_SIZE)
+    chunk1.mesh_len = CHUNK_MESH_SIZE;
 }
 
 
@@ -180,8 +177,6 @@ void setup()
 {    
   pinMode(__B1, INPUT_PULLUP);
   pinMode(__B2, INPUT_PULLUP);
-
-  Serial.begin(9600);
   
   tft.start();
 
@@ -203,10 +198,10 @@ void loop() {
 
   mov = 0;
   if(digitalRead(__B1) != HIGH)
-    mov += 0.2f;
+    mov += 0.5f;
 
   if(digitalRead(__B2) != HIGH)
-    mov -= 0.2f;
+    mov -= 0.5f;
 
   if(mov != 0)
   {
@@ -219,6 +214,7 @@ void loop() {
       //auto camera_step = camera.strafe() * mov;
       //camera.pos = camera.pos - camera_step;
       camera.pos.x -= mov;
+      camera.look_at.x -= mov;
     }
 
     camera.build_view();
@@ -235,10 +231,6 @@ void loop() {
     clear_z_buff();
 
     //render_loop();
-    
-    //render_entity(cube);
-    //render_entity(cube2);
-    //render_entity(cube3);
 
     render_entity(chunk1);
     

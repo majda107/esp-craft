@@ -1,4 +1,5 @@
 #define CHUNK_SIZE 4
+#define CHUNK_MESH_SIZE CHUNK_SIZE*CHUNK_SIZE*CHUNK_SIZE
 
 class Chunk
 {
